@@ -1,0 +1,6 @@
+flask
+werkzeug
+stripe
+python-dotenv
+SQLAlchemy
+psycopg2-binary

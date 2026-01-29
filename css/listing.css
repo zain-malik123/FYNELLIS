@@ -1,0 +1,27 @@
+/* listing.css - shared styles for login / signup / dashboard */
+:root{
+  --bg:#0f1220;
+  --card:#0b0d14;
+  --accent:#7b79f3;
+  --muted:#9aa0b4;
+  --text:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#02030a 0%, #071026 100%);color:var(--text)}
+.container{max-width:980px;margin:40px auto;padding:24px}
+.card{background:var(--card);border-radius:12px;padding:28px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+h1,h2{margin:0 0 12px}
+.form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+label{font-size:13px;color:var(--muted)}
+input[type="text"],input[type="email"],input[type="password"],input[type="tel"]{padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+.button{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;border:none;cursor:pointer}
+.small{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:12px;align-items:center}
+.center{display:flex;justify-content:center}
+.notice{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;color:var(--muted);font-size:13px}
+.profile{display:flex;gap:12px;align-items:center}
+.task-list{margin-top:16px}
+.task{background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:12px;border-radius:8px;margin-bottom:10px}
+.manage{margin-top:18px}
+/* responsive */
+@media(max-width:700px){.container{padding:12px;margin:18px auto}.card{padding:18px}}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign up — Client Portal</title>
+  <link rel="stylesheet" href="css/listing.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Get Started</h1>
+      <p class="small">Sign up and subscribe. A 7-day free trial is offered when allowed.</p>
+      <form id="signupForm">
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" type="email" required />
+        </div>
+        <div class="form-row">
+          <label for="password">Password</label>
+          <input id="password" type="password" required />
+        </div>
+        <div class="form-row">
+          <label for="phone">Phone Number (E.164 preferred)</label>
+          <input id="phone" type="tel" placeholder="+12345556789" required />
+        </div>
+        <div class="row">
+          <button class="button" type="submit">Create account</button>
+          <a class="small" href="login.html">Have an account?</a>
+        </div>
+      </form>
+
+      <div id="subscribeBlock" style="margin-top:14px">
+        <label for="plan">Choose plan</label>
+        <select id="plan">
+          <option value="">(No subscription now)</option>
+          <option value="PRICE_ID_STATER">Starter — Monthly</option>
+        </select>
+        <div style="margin-top:10px" class="row">
+          <button id="subscribeNow" class="button" style="display:none">Subscribe / Continue to Checkout</button>
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px">Note: SMS/OTP is bypassed in this demo. For Stripe Checkout provide real `price_id` values to the server (`DEFAULT_PRICE_ID` or pass `price_id` in JS).</p>
+    </div>
+  </div>
+
+<script>
+const signupForm = document.getElementById('signupForm');
+const subscribeNow = document.getElementById('subscribeNow');
+const planSelect = document.getElementById('plan');
+
+function setAuth(token){
+  localStorage.setItem('auth_token', token);
+}
+
+signupForm.addEventListener('submit', async e =>{
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const phone = document.getElementById('phone').value.trim();
+  if(!email || !password || !phone){ alert('complete form'); return }
+
+  try{
+    const res = await fetch('/api/signup', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email,password,phone})
+    });
+    const j = await res.json();
+    if(!res.ok){ alert(j.error||'Signup failed'); return }
+    // store token
+    if(j.token) setAuth(j.token);
+    alert('Signup created. Free trial: ' + (j.free_trial ? 'YES' : 'NO'));
+    // if user selected a plan, show subscribe button
+    if(planSelect.value){
+      subscribeNow.style.display = 'inline-block';
+    } else {
+      location.href='dashboard.html';
+    }
+  }catch(err){ console.error(err); alert('Network or server error') }
+});
+
+subscribeNow.addEventListener('click', async ()=>{
+  const price_id = planSelect.value;
+  const token = localStorage.getItem('auth_token');
+  if(!token){ alert('Not authenticated'); return }
+  if(!price_id){ alert('Select a plan'); return }
+  try{
+    const res = await fetch('/api/create-checkout-session', {
+      method: 'POST', headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({price_id})
+    });
+    const j = await res.json();
+    if(!res.ok){ alert(j.error||'Could not create checkout session'); return }
+    // redirect to Stripe Checkout
+    if(j.url) window.location.href = j.url;
+  }catch(err){ console.error(err); alert('Network or server error') }
+});
+</script>
+</body>
+</html>

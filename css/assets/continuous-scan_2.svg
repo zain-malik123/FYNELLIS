@@ -1,0 +1,13 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="21.1718" y="25" width="77.6562" height="70" rx="7.1875" fill="#7546DD" fill-opacity="0.2"/>
+<rect x="21.2499" y="25.0781" width="77.5" height="69.8438" rx="7.10938" stroke="white" stroke-opacity="0.2" stroke-width="0.15625"/>
+<rect x="21.1718" y="25" width="77.6562" height="19.5312" rx="7.1875" fill="#7546DD" fill-opacity="0.6"/>
+<path d="M35.2979 37.798C36.8 37.798 38.0176 36.5803 38.0176 35.0782C38.0176 33.5761 36.8 32.3584 35.2979 32.3584C33.7958 32.3584 32.5781 33.5761 32.5781 35.0782C32.5781 36.5803 33.7958 37.798 35.2979 37.798Z" fill="white" fill-opacity="0.7"/>
+<path d="M84.6114 37.7833C86.1135 37.7833 87.3312 36.5656 87.3312 35.0635C87.3312 33.5614 86.1135 32.3438 84.6114 32.3438C83.1093 32.3438 81.8916 33.5614 81.8916 35.0635C81.8916 36.5656 83.1093 37.7833 84.6114 37.7833Z" fill="white" fill-opacity="0.7"/>
+<rect x="28.8281" y="53.75" width="15.625" height="11.7188" rx="1.875" fill="#7249DE" fill-opacity="0.5"/>
+<rect x="52.1093" y="53.75" width="15.625" height="11.7188" rx="1.875" fill="#7249DE" fill-opacity="0.5"/>
+<rect x="75.3906" y="53.75" width="15.625" height="11.7188" rx="1.875" fill="#7249DE" fill-opacity="0.5"/>
+<rect x="28.8281" y="69.2188" width="15.625" height="11.7188" rx="1.875" fill="#7249DE" fill-opacity="0.5"/>
+<rect x="52.1093" y="69.2188" width="15.625" height="11.7188" rx="1.875" fill="#7249DE" fill-opacity="0.5"/>
+<rect x="75.3906" y="69.2188" width="15.625" height="11.7188" rx="1.875" fill="#7249DE" fill-opacity="0.5"/>
+</svg>

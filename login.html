@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Client Portal</title>
+  <link rel="stylesheet" href="css/listing.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Login</h1>
+      <p class="small">This is the Client Portal. Use the form below to sign in.</p>
+      <form id="loginForm">
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" type="email" required />
+        </div>
+        <div class="form-row">
+          <label for="password">Password</label>
+          <input id="password" type="password" required />
+        </div>
+        <div class="row">
+          <button class="button" type="submit">Sign in</button>
+          <a class="small" href="signup.html">Create account</a>
+        </div>
+      </form>
+      <div class="manage">
+        <button id="manageBilling" class="button">Manage Billing (Stripe Customer Portal)</button>
+      </div>
+      <p class="small" style="margin-top:12px">Note: The <em>Manage Billing</em> button requires a backend endpoint to create a Stripe Customer Portal session. See README comments in the code.</p>
+    </div>
+  </div>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+loginForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  if(!email || !password){ alert('Enter email and password'); return }
+  try{
+    const res = await fetch('/api/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password})});
+    const j = await res.json();
+    if(!res.ok){ alert(j.error || 'Login failed'); return }
+    // store token and redirect
+    localStorage.setItem('auth_token', j.token);
+    localStorage.setItem('user_email', j.email);
+    location.href = 'dashboard.html';
+  }catch(err){ console.error(err); alert('Network error') }
+});
+
+document.getElementById('manageBilling').addEventListener('click', async ()=>{
+  const token = localStorage.getItem('auth_token');
+  if(!token){ alert('Please sign in first'); return }
+  try{
+    const res = await fetch('/api/create-portal-session', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({return_url: window.location.origin + '/dashboard.html'})});
+    const j = await res.json();
+    if(!res.ok){ alert(j.error || 'Could not create portal session'); return }
+    window.location = j.url;
+  }catch(err){ console.error(err); alert('Network error') }
+});
+</script>
+</body>
+</html>

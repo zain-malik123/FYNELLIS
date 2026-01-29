@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard — Client Portal</title>
+  <link rel="stylesheet" href="css/listing.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Two-column portal grid: left menu + right content */
+    .portal-grid{display:grid;grid-template-columns:240px 1fr;gap:16px}
+    @media(max-width:760px){.portal-grid{grid-template-columns:1fr}}
+    /* left menu as vertical column */
+    nav#leftMenu{background:transparent;padding:0}
+    .menu{display:flex;flex-direction:column;gap:10px;padding:6px}
+    .menu-item{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid rgba(0,0,0,0.06);background:#ffffff;text-align:left;border-radius:10px;cursor:pointer;font-weight:600;color:#111;box-shadow:0 1px 2px rgba(16,24,40,0.03);transition:transform .18s ease,box-shadow .18s ease,background .12s}
+    .menu-item svg{width:18px;height:18px;flex:0 0 18px;opacity:0.9}
+    .menu-item:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(16,24,40,0.08);background:linear-gradient(180deg, #fff, #fbfbff)}
+    .menu-item.active{background:#0b5fff;color:#fff;border-color:transparent;box-shadow:0 8px 30px rgba(11,95,255,0.16)}
+    .menu-item.active svg{filter:brightness(0) invert(1)}
+    /* inner pane form grid (two columns on wide screens) */
+    .pane-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+    .pane-grid input{width:100%;box-sizing:border-box}
+    .pane-grid .full{grid-column:1 / -1}
+    /* overall styling improvements */
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;background:#f6f7fb;color:#0b0b0b}
+    .card{border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06);background:linear-gradient(180deg,#ffffff,#fbfdff);padding:18px}
+    h1,h2,h3{font-weight:600}
+    .button{transition:transform .14s ease,box-shadow .14s ease}
+    .button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(11,95,255,0.08)}
+
+    /* pane animation */
+    .pane{opacity:0;transform:translateY(8px);transition:opacity .28s ease,transform .28s ease}
+    .pane.show{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .menu-item,.button,.pane{transition:none}
+    }
+    /* plan card styles */
+    .plan-grid{margin-top:6px}
+    .plan-card{background:linear-gradient(180deg,#fff,#fbfdff);padding:14px;border-radius:10px;border:1px solid rgba(10,20,60,0.04);box-shadow:0 6px 18px rgba(11,95,255,0.03);transition:transform .18s ease,box-shadow .18s}
+    .plan-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(11,95,255,0.06)}
+    .plan-card.active{border-color:#0b5fff;background:linear-gradient(180deg,#0b5fff,#0a4be0);color:#fff}
+    .plan-card .plan-price{font-weight:700;margin-top:6px}
+    .plan-card .plan-features{color:rgba(11,11,11,0.65);margin-top:8px}
+    .plan-card.active .plan-features{color:rgba(255,255,255,0.9)}
+    .plan-select{width:100%}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" style="padding:12px;">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <h1>Client Portal</h1>
+          <div class="small">Manage payments, subscriptions, invoices and profile.</div>
+        </div>
+        <div class="profile">
+          <div class="small" id="profileEmail"></div>
+          <button id="logoutBtn" class="button">Sign out</button>
+        </div>
+      </div>
+
+      <div class="portal-grid" style="margin-top:16px">
+        <nav id="leftMenu">
+          <div class="menu">
+            <button class="menu-item" data-section="payments">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v10H3z" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Payments
+            </button>
+            <button class="menu-item" data-section="subscription">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9a7 7 0 0 0 14 0" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Subscription
+            </button>
+            <button class="menu-item" data-section="invoices">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15V5a2 2 0 0 0-2-2H7l-4 4v8a2 2 0 0 0 2 2h12" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 7h4" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Invoices
+            </button>
+            <button class="menu-item" data-section="profile">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20c1.333-2 3.333-3 6-3s4.667 1 6 3" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Profile
+            </button>
+          </div>
+        </nav>
+
+        <main id="rightContent" style="min-width:280px">
+          <section id="section-payments" class="pane" style="display:none">
+            <h2>Payments</h2>
+            <p>Manage saved payment methods and cards via the Stripe Customer Portal.</p>
+            <div style="margin-top:8px">
+              <button id="openCustomerPortal" class="button">Open Payment Methods (Customer Portal)</button>
+            </div>
+          </section>
+
+          <section id="section-subscription" class="pane" style="display:none">
+            <h2>Subscription</h2>
+            <p>Choose a plan to subscribe. You can manage billing or cancel anytime from the Customer Portal.</p>
+            <div style="margin-top:12px">
+              <div class="plan-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+                <div class="plan-card" data-price="price_monthly_basic">
+                  <div class="plan-header"><strong>Basic</strong><div class="plan-price">€9 / mo</div></div>
+                  <div class="plan-features small">Essential alerts<br/>Email support</div>
+                  <div style="margin-top:10px"><button class="plan-select button">Select</button></div>
+                </div>
+                <div class="plan-card" data-price="price_monthly_pro">
+                  <div class="plan-header"><strong>Pro</strong><div class="plan-price">€29 / mo</div></div>
+                  <div class="plan-features small">Realtime signals<br/>Priority support</div>
+                  <div style="margin-top:10px"><button class="plan-select button">Select</button></div>
+                </div>
+                <div class="plan-card" data-price="price_yearly_basic">
+                  <div class="plan-header"><strong>Basic (Year)</strong><div class="plan-price">€90 / yr</div></div>
+                  <div class="plan-features small">Save 25% — Essential alerts</div>
+                  <div style="margin-top:10px"><button class="plan-select button">Select</button></div>
+                </div>
+                <div class="plan-card" data-price="price_yearly_pro">
+                  <div class="plan-header"><strong>Pro (Year)</strong><div class="plan-price">€290 / yr</div></div>
+                  <div class="plan-features small">Save 20% — All features</div>
+                  <div style="margin-top:10px"><button class="plan-select button">Select</button></div>
+                </div>
+              </div>
+              <div style="margin-top:12px">
+                <button id="startCheckout" class="button">Subscribe to selected plan</button>
+                <button id="openBillingPortalFromSub" class="button" style="background:#444;margin-left:8px">Manage / Cancel Subscription</button>
+              </div>
+            </div>
+            <div id="subMessage" class="small" style="margin-top:10px;color:#666">Select a plan to continue.</div>
+          </section>
+
+          <section id="section-invoices" class="pane" style="display:none">
+            <h2>Invoices</h2>
+            <div id="invoicesList" class="small" style="margin-top:8px">Loading invoices...</div>
+          </section>
+
+          <section id="section-profile" class="pane" style="display:none">
+            <h2>Profile</h2>
+            <form id="profileForm" style="max-width:800px">
+              <div class="pane-grid">
+                <div>
+                  <label class="small">Name</label>
+                  <input id="pf_name" type="text" />
+                </div>
+                <div>
+                  <label class="small">Email</label>
+                  <input id="pf_email" type="email" />
+                </div>
+                <div class="full">
+                  <label class="small">Billing address</label>
+                  <input id="pf_billing" type="text" />
+                </div>
+                <div>
+                  <label class="small">VAT / Tax ID</label>
+                  <input id="pf_vat" type="text" />
+                </div>
+                <div class="full" style="margin-top:8px">
+                  <button id="saveProfile" class="button">Save Profile</button>
+                </div>
+              </div>
+              <hr />
+              <h3>Change password</h3>
+              <div style="margin-top:6px" class="pane-grid">
+                <div>
+                  <label class="small">New password</label>
+                  <input id="pf_password" type="password" />
+                </div>
+                <div style="display:flex;align-items:end">
+                  <button id="changePassword" class="button">Change Password</button>
+                </div>
+              </div>
+              <div id="profileMsg" class="small" style="margin-top:8px;color:#666"></div>
+            </form>
+          </section>
+        </main>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+// Use auth token
+const token = localStorage.getItem('auth_token');
+if(!token){ alert('Not signed in — redirecting to login'); location.href='login.html'; }
+
+function showSection(name){
+  // deactivate menu items
+  document.querySelectorAll('.menu-item').forEach(mi=>mi.classList.remove('active'));
+  const activeBtn = document.querySelector(`.menu-item[data-section="${name}"]`);
+  if(activeBtn) activeBtn.classList.add('active');
+  // hide panes and show the chosen one with animation class
+  document.querySelectorAll('.pane').forEach(p=>{ p.classList.remove('show'); p.style.display='none'; });
+  const el = document.getElementById('section-'+name);
+  if(el){ el.style.display='block'; // force reflow then add show to trigger transition
+    requestAnimationFrame(()=> el.classList.add('show')); }
+}
+
+document.querySelectorAll('.menu-item').forEach(btn=>btn.addEventListener('click', (e)=>{
+  const s = e.currentTarget.dataset.section;
+  showSection(s);
+  if(s==='invoices') fetchInvoices();
+}));
+
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  try{ await fetch('/api/logout', {method:'POST', headers:{'Authorization':'Bearer '+token}}); }catch(e){}
+  localStorage.removeItem('auth_token'); localStorage.removeItem('user_email'); location.href='login.html';
+});
+
+async function openCustomerPortal(){
+  try{
+    const res = await fetch('/api/create-portal-session', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({return_url: window.location.origin + '/dashboard.html'})});
+    const j = await res.json(); if(!res.ok){ alert(j.error || 'Could not create portal session'); return }
+    window.location = j.url;
+  }catch(err){ console.error(err); alert('Network error') }
+}
+
+document.getElementById('openCustomerPortal').addEventListener('click', openCustomerPortal);
+document.getElementById('openBillingPortalFromSub').addEventListener('click', openCustomerPortal);
+
+let selectedPrice = null;
+function selectPlanCard(card){
+  document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active');
+  selectedPrice = card.dataset.price;
+  document.getElementById('subMessage').textContent = 'Selected plan: ' + (card.querySelector('.plan-header strong').textContent || selectedPrice);
+}
+document.querySelectorAll('.plan-card').forEach(card=>{
+  const btn = card.querySelector('.plan-select');
+  btn.addEventListener('click', ()=> selectPlanCard(card));
+});
+
+async function startCheckout(){
+  if(!selectedPrice){ document.getElementById('subMessage').textContent = 'Please select a plan first.'; return }
+  try{
+    const res = await fetch('/api/create-checkout-session', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({price_id: selectedPrice})});
+    const j = await res.json(); if(!res.ok){ document.getElementById('subMessage').textContent = j.error || 'Checkout creation failed'; return }
+    window.location = j.url;
+  }catch(err){ console.error(err); document.getElementById('subMessage').textContent = 'Network error'; }
+}
+document.getElementById('startCheckout').addEventListener('click', startCheckout);
+
+async function fetchInvoices(){
+  const container = document.getElementById('invoicesList'); container.textContent = 'Loading...';
+  try{
+    const res = await fetch('/api/invoices', {headers:{'Authorization':'Bearer '+token}});
+    const j = await res.json(); if(!res.ok){ container.textContent = j.error || 'Failed to fetch invoices'; return }
+    const invs = j.invoices || [];
+    if(invs.length===0){ container.textContent = 'No invoices found.'; return }
+    container.innerHTML = '';
+    invs.forEach(inv=>{
+      const div = document.createElement('div'); div.style.marginBottom='10px';
+      div.innerHTML = `<div><strong>Invoice ${inv.id}</strong> — ${inv.amount_due/100} ${inv.currency||'USD'} — ${inv.status || ''}</div>`;
+      const dl = document.createElement('div'); dl.style.marginTop='6px';
+      if(inv.pdf){ const a = document.createElement('a'); a.href = inv.pdf; a.target='_blank'; a.textContent = 'Download PDF'; dl.appendChild(a); }
+      container.appendChild(div); container.appendChild(dl);
+    });
+  }catch(err){ console.error(err); document.getElementById('invoicesList').textContent = 'Network error'; }
+}
+
+async function loadProfile(){
+  try{
+    const res = await fetch('/api/profile', {headers:{'Authorization':'Bearer '+token}});
+    const j = await res.json(); if(!res.ok){ throw new Error(j.error||'Failed') }
+    document.getElementById('profileEmail').textContent = j.profile.email;
+    // populate profile form
+    const p = j.profile.profile || {};
+    document.getElementById('pf_name').value = p.name || '';
+    document.getElementById('pf_email').value = j.profile.email || '';
+    document.getElementById('pf_billing').value = p.billing_address || '';
+    document.getElementById('pf_vat').value = p.vat || '';
+  }catch(err){ console.error(err); alert('Profile load failed — please sign in again'); location.href='login.html'; }
+}
+
+document.getElementById('saveProfile').addEventListener('click', async (ev)=>{
+  ev.preventDefault();
+  const payload = {name: document.getElementById('pf_name').value, billing_address: document.getElementById('pf_billing').value, vat: document.getElementById('pf_vat').value};
+  try{
+    const res = await fetch('/api/profile', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify(payload)});
+    const j = await res.json(); if(!res.ok){ document.getElementById('profileMsg').textContent = j.error || 'Save failed'; return }
+    document.getElementById('profileMsg').textContent = 'Profile saved.';
+  }catch(err){ console.error(err); document.getElementById('profileMsg').textContent = 'Network error'; }
+});
+
+document.getElementById('changePassword').addEventListener('click', async (ev)=>{
+  ev.preventDefault();
+  const pw = document.getElementById('pf_password').value;
+  if(!pw){ document.getElementById('profileMsg').textContent = 'Enter a new password.'; return }
+  try{
+    const res = await fetch('/api/profile', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({password: pw})});
+    const j = await res.json(); if(!res.ok){ document.getElementById('profileMsg').textContent = j.error || 'Change password failed'; return }
+    document.getElementById('profileMsg').textContent = 'Password changed.';
+    document.getElementById('pf_password').value = '';
+  }catch(err){ console.error(err); document.getElementById('profileMsg').textContent = 'Network error'; }
+});
+
+// init
+showSection('payments');
+loadProfile();
+</script>
+</body>
+</html>
