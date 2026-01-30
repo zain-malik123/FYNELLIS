@@ -61,7 +61,7 @@ def require_auth(fn):
 # Serve static files (HTML/CSS/JS)
 @app.route('/')
 def index():
-    return send_from_directory(APP_ROOT, 'login.html')
+    return send_from_directory(APP_ROOT, 'index.html')
 
 @app.route('/<path:filename>')
 def static_files(filename):
