@@ -1,0 +1,28 @@
+#!/bin/sh
+# Templated systemd service for the Fynelis Flask app.
+# Before installing: replace REPLACE_USER and REPLACE_GROUP with your server user/group
+# and ensure WorkingDirectory and PATH point to the deployed project and venv.
+
+[Unit]
+Description=Fynelis Flask app
+After=network.target
+
+[Service]
+User=REPLACE_USER
+Group=REPLACE_GROUP
+WorkingDirectory=/home/REPLACE_USER/fynelis
+Environment="PATH=/home/REPLACE_USER/fynelis/.venv/bin"
+Environment="PORT=8000"
+ExecStart=/home/REPLACE_USER/fynelis/.venv/bin/gunicorn -w 1 -b 127.0.0.1:8000 server:app
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+
+# Install instructions:
+# 1) Edit this file and replace REPLACE_USER/REPLACE_GROUP with your values.
+# 2) Copy to the server and place at /etc/systemd/system/fynelis.service
+#    or run the provided install script in this folder.
+# 3) sudo systemctl daemon-reload && sudo systemctl enable --now fynelis
+# 4) sudo journalctl -u fynelis -f

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Merged Pages</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0px;
+    }
+    #merged-content > div {
+      position: relative; /* ensures content inside stacks correctly */
+      width: 100%;
+      margin-bottom: 0px; /* space between pages */
+    }
+    #page-3,#page-4,#page-5{
+        margin-top: -50px;;
+    }
+  </style>
+</head>
+<body>
+ 
+  <div id="merged-content"></div>
+
+  <script>
+    // List of HTML files
+    const files = [
+      '1.html',
+      '2.html',
+      '3.html',
+      '4.html',
+      // ... up to page10.html
+    ];
+
+    const container = document.getElementById('merged-content');
+
+    // Load pages **sequentially**
+    (async function loadPages() {
+      for (const file of files) {
+        try {
+          const res = await fetch(file);
+          const html = await res.text();
+
+          // Extract <style> and <body> content
+          const styles = html.match(/<style[^>]*>[\s\S]*?<\/style>/gi)?.join('\n') || '';
+          const bodyContent = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html;
+
+          // Create container div for this page
+          const div = document.createElement('div');
+
+          div.classList.add('page-container');
+          div.id = `page-${file.replace('.html', '')}`; // e.g., page-1, page-2
+
+          // Optional: use Shadow DOM to isolate CSS
+          const shadow = div.attachShadow({ mode: 'open' });
+          shadow.innerHTML = styles + bodyContent;
+
+          container.appendChild(div);
+
+        } catch (err) {
+          console.error('Error loading file:', file, err);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
